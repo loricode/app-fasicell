@@ -1,25 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useReducer } from "react";
+import { AppRouter } from "./app/router/AppRouter";
+import { AuthContext } from "./app/views/store/contexts/AuthContext";
+import { authReducer } from "./app/views/store/reducers/authReducer";
+
+const init = () => {
+  let sessionUser: any = sessionStorage.getItem("user");
+  let user: any;
+  if (!sessionUser) {
+    user = sessionUser;
+  } else {
+    user = JSON.parse(sessionUser);
+  }
+  return user;
+};
 
 function App() {
+  const [user, dispatchUser] = useReducer(authReducer, {}, init);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthContext.Provider value={{ user, dispatchUser }}>
+      <AppRouter />
+    </AuthContext.Provider>
   );
 }
 
