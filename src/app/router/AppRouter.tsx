@@ -1,7 +1,9 @@
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AuthRouter } from '../views/auth/AuthRouter';
 export function AppRouter(){
    return (
-      <div>
-         router
-      </div>
+      <Router>
+         <AuthRouter/>
+      </Router>
    );
 }
