@@ -2,19 +2,37 @@ import { AuthCard } from "../components/authCard/AuthCard";
 import logo from '../../../assets/img/logo.png';
 import accountIcon from '../../../assets/icons/account.svg';
 import passwordIcon from '../../../assets/icons/password.svg';
-import React, { useContext } from "react";
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from "react";
+import { Link, useHistory } from 'react-router-dom';
 import { AuthContext } from "../../store/contexts/AuthContext";
+import { AuthService } from "../../../services/auth/AuthService";
+
 
 export function Login(){
    const { dispatchUser }:any = useContext(AuthContext);
- 
-   const handleSubmit = () => {
+   const [ auth, setAuth ] = useState({email:'', password:''})
+   const history = useHistory();
 
+   const handleSubmit = async (e:React.ChangeEvent<HTMLFormElement>) => {
+      try {
+          e.preventDefault();
+          const resp = await AuthService.login(auth);
+          console.log(resp)
+          if(resp.success){
+            sessionStorage.setItem('user', JSON.stringify({...resp.data, loggedIn:true}));  
+            dispatchUser({type:'login', payload:resp.data }); 
+            history.replace('/dashboard/home');
+          }
+      } catch (error) {
+        
+      } 
    }
 
    const handleChange = (e:React.ChangeEvent<HTMLFormElement | HTMLInputElement>) => {
-
+       setAuth({
+         ...auth,
+         [e.target.name]:e.target.value
+       })
    }
 
    return(
@@ -37,7 +55,7 @@ export function Login(){
           </div>
           <input
             autoFocus
-            className="form-control txt-input"
+            className="form-control border-0 txt-input"
             name="email"
             type="email"
             placeholder="Email"
@@ -53,7 +71,7 @@ export function Login(){
               alt="iconUser" />
           </div>
           <input
-            className="form-control txt-input"
+            className="form-control border-0  txt-input"
             name="password"
             type="password"
             placeholder="Password"
